@@ -1,3 +1,4 @@
+const itemsElt = document.querySelector("#items");
 // Requête API
 
 fetch("http://localhost:3000/api/products/")
@@ -7,9 +8,8 @@ fetch("http://localhost:3000/api/products/")
 
 // Boucle sur l'élément ciblé (#items)
 function appendProducts(products) {
-  const items = document.querySelector("#items");
   for (let product of products) {
-    appendProductToItems(product, items);
+    appendProductToItems(product, itemsElt);
   }
 }
 
