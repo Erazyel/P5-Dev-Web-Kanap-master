@@ -1,15 +1,7 @@
-let cart = JSON.parse(localStorage.getItem("cart"));
-
-if (cart === null) {
-  // si le panier n'existe pas, on crée le panier
-  cart = [];
-  localStorage.setItem("cart", JSON.stringify(cart));
-}
-
 const colorPicked = document.querySelector("#colors");
 const quantityPicked = document.querySelector("#quantity");
 const btn_envoyerPanier = document.querySelector("#addToCart");
-
+// Point d'entrée
 main();
 
 async function main() {
@@ -19,13 +11,6 @@ async function main() {
   const product = await getProduct(idProduct);
   updatePage(product);
   btn_envoyerPanier.addEventListener("click", () => onAddToCart(product));
-}
-
-// Récupération des articles de l'API
-async function getProduct(idProduct) {
-  const result = await fetch("http://localhost:3000/api/products/" + idProduct);
-  const product = await result.json();
-  return product;
 }
 
 function updatePage(product) {

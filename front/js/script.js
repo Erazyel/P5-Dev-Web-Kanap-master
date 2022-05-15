@@ -1,8 +1,7 @@
 const itemsElt = document.querySelector("#items");
 // Requête API
 
-fetch("http://localhost:3000/api/products/")
-  .then((res) => res.json())
+getAllProducts()
   .then(appendProducts)
   .catch((error) => alert("Le service a rencontré une erreur"));
 
