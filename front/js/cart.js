@@ -2,6 +2,7 @@ const cartItems = document.getElementById("cart__items");
 const totalPriceElt = document.getElementById("totalPrice");
 const totalQuantityElt = document.getElementById("totalQuantity");
 
+// Affichage du panier
 async function displayCart() {
   let totalPrice = 0;
   let totalQuantity = 0;
@@ -41,6 +42,8 @@ function appendProductToItems(product, productCart, items, price) {
 }
 displayCart().then(() => addEvenements());
 
+// Mise à jour de la quantité d'un produit
+
 async function onProductQuantityChange(evt) {
   const input = evt.target;
   const quantity = Number(input.value);
@@ -56,6 +59,12 @@ async function onProductQuantityChange(evt) {
     // si le produit existe déjà on met à jour la quantité, ou on retire le produit du panier
     if (quantity == 0) {
       await removeItemFromCart(_id, color);
+    }
+    if (quantity <= 0 || quantity > 100) {
+      alert(
+        "Quantité invalide, veuillez indiquer une quantité comprise entre 1 et 100"
+      );
+      return false;
     } else {
       cartProduct.quantity = quantity;
       localStorage.setItem("cart", JSON.stringify(cart));
@@ -63,6 +72,7 @@ async function onProductQuantityChange(evt) {
   }
   await updateTotalCart();
 }
+
 async function onRemoveProduct(evt) {
   const productElt = evt.target.closest(".cart__item");
   const _id = productElt.dataset.id;
@@ -133,7 +143,7 @@ function checkRegex(value, pattern, errorEltId, errorMsg) {
   return result;
 }
 
-// ******* PRENOM *******
+// Prénom
 form.firstName.addEventListener("change", function (evt) {
   const value = evt.target.value;
   const pattern =
@@ -143,7 +153,7 @@ form.firstName.addEventListener("change", function (evt) {
   fieldsValid.firstName = checkRegex(value, pattern, errorEltId, errorMsg);
 });
 
-// ******* NOM *******
+// Nom
 form.lastName.addEventListener("change", function (evt) {
   const value = evt.target.value;
   const pattern =
@@ -153,17 +163,16 @@ form.lastName.addEventListener("change", function (evt) {
   fieldsValid.lastName = checkRegex(value, pattern, errorEltId, errorMsg);
 });
 
-// ******* ADRESSE *******
+// Adresse
 form.address.addEventListener("change", function (evt) {
   const value = evt.target.value;
-  const pattern =
-    "^[a-zA-Z-9'áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ._s -]*$";
+  const pattern = "^[0-9]{1,3}(?:(?:[,. ]){1}[-a-zA-Zàâäéèêëïîôöùûüç]+)+";
   const errorEltId = "addressErrorMsg";
   const errorMsg = "Format d'adresse non reconnu";
   fieldsValid.address = checkRegex(value, pattern, errorEltId, errorMsg);
 });
 
-// ******* VILLE *******
+// Ville
 form.city.addEventListener("change", function (evt) {
   const value = evt.target.value;
   const pattern =
@@ -173,7 +182,7 @@ form.city.addEventListener("change", function (evt) {
   fieldsValid.city = checkRegex(value, pattern, errorEltId, errorMsg);
 });
 
-// ******* EMAIL *******
+// Mail
 form.email.addEventListener("change", function (evt) {
   const value = evt.target.value;
   const pattern =
@@ -183,7 +192,7 @@ form.email.addEventListener("change", function (evt) {
   fieldsValid.email = checkRegex(value, pattern, errorEltId, errorMsg);
 });
 
-// ******* Passer la commande *******
+// Passer la commande
 
 const firstName = document.getElementById("firstName");
 const lastName = document.getElementById("lastName");
