@@ -1,6 +1,6 @@
 const itemsElt = document.querySelector("#items");
-// Requête API
 
+// Requête API
 getAllProducts()
   .then(appendProducts)
   .catch((error) => alert("Le service a rencontré une erreur"));
@@ -8,14 +8,14 @@ getAllProducts()
 // Boucle sur l'élément ciblé (#items)
 function appendProducts(products) {
   for (let product of products) {
-    appendProductToItems(product, itemsElt);
+    appendProductToHtml(product, itemsElt);
   }
 }
 
-// Ajoute un produit à la liste fournie
+// Ajoute un produit au html
 
-function appendProductToItems(product, items) {
-  items.innerHTML += ` <a href="./product.html?id=${product._id}">
+function appendProductToHtml(product, itemsElt) {
+  itemsElt.innerHTML += ` <a href="./product.html?id=${product._id}">
 <article>
   <img src="${product.imageUrl}" alt="${product.altTxt}">
   <h3 class="productName">${product.name}</h3>

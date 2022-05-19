@@ -1,24 +1,24 @@
-const cartItems = document.getElementById("cart__items");
+const cartItemsElt = document.getElementById("cart__items");
 const totalPriceElt = document.getElementById("totalPrice");
 const totalQuantityElt = document.getElementById("totalQuantity");
 
-// Affichage du panier
-async function displayCart() {
-  let totalPrice = 0;
-  let totalQuantity = 0;
+main();
+
+async function main() {
+  // Boucle sur tous les produits du panier
   for (let productCart of cart) {
     let product = await getProduct(productCart._id);
     const price = getProductCartPrice(productCart, product);
-    appendProductToItems(product, productCart, cartItems, price);
-    totalPrice += price;
-    totalQuantity += productCart.quantity;
+    addProductToHtml(product, productCart, cartItemsElt, price);
   }
-  totalPriceElt.innerHTML = totalPrice;
-  totalQuantityElt.innerHTML = totalQuantity;
+  await updateTotalCart();
+  // Ecoute les événements utilisateur sur les produits du panier (modification quantité ou suppression produit)
+  listenAllEvents();
 }
 
-function appendProductToItems(product, productCart, items, price) {
-  items.innerHTML += ` <article class="cart__item" data-id="${productCart._id}" data-color="${productCart.color}">
+// Ajouter les produits au html
+function addProductToHtml(product, productCart, itemsElt, price) {
+  itemsElt.innerHTML += ` <article class="cart__item" data-id="${productCart._id}" data-color="${productCart.color}">
   <div class="cart__item__img">
     <img src="${product.imageUrl}" alt="${product.description}">
   </div>
@@ -40,9 +40,8 @@ function appendProductToItems(product, productCart, items, price) {
   </div>
 </article> `;
 }
-displayCart().then(() => addEvenements());
 
-// Mise à jour de la quantité d'un produit
+// Mise à jour de la quantité d'un produit lors de l'événement
 
 async function onProductQuantityChange(evt) {
   const input = evt.target;
@@ -60,11 +59,11 @@ async function onProductQuantityChange(evt) {
     if (quantity == 0) {
       await removeItemFromCart(_id, color);
     }
-    if (quantity <= 0 || quantity > 100) {
+    // si la quantité n'est pas comprise entre 0 et 100 on envoie une alerte
+    else if (quantity < 0 || quantity > 100) {
       alert(
         "Quantité invalide, veuillez indiquer une quantité comprise entre 1 et 100"
       );
-      return false;
     } else {
       cartProduct.quantity = quantity;
       localStorage.setItem("cart", JSON.stringify(cart));
@@ -72,7 +71,7 @@ async function onProductQuantityChange(evt) {
   }
   await updateTotalCart();
 }
-
+// Au clic sur le bouton supprimer, on supprime le produit sélectionné du panier
 async function onRemoveProduct(evt) {
   const productElt = evt.target.closest(".cart__item");
   const _id = productElt.dataset.id;
@@ -80,7 +79,8 @@ async function onRemoveProduct(evt) {
   await removeItemFromCart(_id, color);
 }
 
-function addEvenements() {
+// Lier les événements utilisateur aux fonctions du panier
+function listenAllEvents() {
   const inputs = document.querySelectorAll(".itemQuantity");
   for (let input of inputs) {
     input.addEventListener("change", async (evt) =>
@@ -92,6 +92,8 @@ function addEvenements() {
     btn.addEventListener("click", async (evt) => onRemoveProduct(evt));
   }
 }
+
+// Supprime un produit du panier et du local storage
 async function removeItemFromCart(_id, color) {
   const productElt = document.querySelector(
     `[data-id="${_id}"][data-color="${color}"]`
@@ -103,6 +105,7 @@ async function removeItemFromCart(_id, color) {
   alert("Votre produit a bien été supprimé");
 }
 
+// Calcule et met à jour le prix total des produits ajoutés au panier
 async function updateTotalCart() {
   let totalPrice = 0;
   let totalQuantity = 0;
@@ -128,7 +131,7 @@ let fieldsValid = {
   city: false,
   email: false,
 };
-// Fonction pour les tests RegExp
+// Teste la valeur d'un champ du formulaire et met à jour le message d'erreur fourni en paramètre en cas d'échec (retourne true si la valeur est correcte, et false dans le cas contraire)
 function checkRegex(value, pattern, errorEltId, errorMsg) {
   const regExp = new RegExp(pattern, "g");
   const errorElt = document.getElementById(errorEltId);
@@ -203,6 +206,7 @@ const email = document.getElementById("email");
 const submitBtn = document.getElementById("order");
 
 submitBtn.addEventListener("click", function (evt) {
+  // Evite le rechargement de la page
   evt.preventDefault();
   if (
     fieldsValid.firstName === false ||
@@ -233,7 +237,7 @@ submitBtn.addEventListener("click", function (evt) {
     },
     products: idProducts,
   };
-
+  // Création de la commande
   getOrder(order)
     .then((data) => {
       localStorage.clear();
