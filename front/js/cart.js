@@ -8,7 +8,7 @@ async function main() {
   // Boucle sur tous les produits du panier
   for (let productCart of cart) {
     let product = await getProduct(productCart._id);
-    const price = getProductCartPrice(productCart, product);
+    const price = product.price;
     addProductToHtml(product, productCart, cartItemsElt, price);
   }
   await updateTotalCart();
